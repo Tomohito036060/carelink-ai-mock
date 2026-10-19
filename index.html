@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareLink AI - ログイン</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --color-primary-50: #eff6ff;
+            --color-primary-100: #dbeafe;
+            --color-primary-200: #bfdbfe;
+            --color-primary-300: #93c5fd;
+            --color-primary-400: #60a5fa;
+            --color-primary-500: #3b82f6;
+            --color-primary-600: #2563eb;
+            --color-primary-700: #1d4ed8;
+            --color-primary-800: #1e40af;
+            --color-primary-900: #1e3a5f;
+            --color-secondary-50: #f0fdfa;
+            --color-secondary-100: #ccfbf1;
+            --color-secondary-500: #14b8a6;
+            --color-secondary-600: #0d9488;
+            --color-secondary-700: #0f766e;
+            --color-accent-50: #fffbeb;
+            --color-accent-100: #fef3c7;
+            --color-accent-500: #f59e0b;
+            --color-accent-600: #d97706;
+            --color-accent-700: #b45309;
+            --color-neutral-50: #f8fafc;
+            --color-neutral-100: #f1f5f9;
+            --color-neutral-200: #e2e8f0;
+            --color-neutral-300: #cbd5e1;
+            --color-neutral-400: #94a3b8;
+            --color-neutral-500: #64748b;
+            --color-neutral-600: #475569;
+            --color-neutral-700: #334155;
+            --color-neutral-800: #1e293b;
+            --color-neutral-900: #0f172a;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-surface-elevated: #ffffff;
+            --color-success: #16a34a;
+            --color-success-bg: #f0fdf4;
+            --color-warning: #d97706;
+            --color-warning-bg: #fffbeb;
+            --color-error: #dc2626;
+            --color-error-bg: #fef2f2;
+            --color-info: #2563eb;
+            --color-info-bg: #eff6ff;
+            --font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            --font-size-caption: 12px;
+            --font-size-body: 14px;
+            --font-size-subtitle: 16px;
+            --font-size-title: 18px;
+            --font-size-heading: 22px;
+            --font-size-display: 28px;
+            --line-height-body: 1.6;
+            --line-height-heading: 1.3;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-12: 48px;
+            --space-16: 64px;
+            --shadow-low: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-medium: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-high: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --state-hover-opacity: 0.9;
+            --state-active-scale: 0.98;
+            --state-focus-ring: 0 0 0 3px rgba(59,130,246,0.3);
+            --state-disabled-opacity: 0.5;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-body);
+            line-height: var(--line-height-body);
+            color: var(--color-neutral-800);
+            background: var(--color-background);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+            position: relative;
+        }
+
+        img, svg { display: block; max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        button, input, textarea, select { font: inherit; color: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+        ul, ol { list-style: none; }
+
+        h1 { font-size: var(--font-size-display); font-weight: var(--font-weight-bold); line-height: var(--line-height-heading); color: var(--color-neutral-900); }
+        h2 { font-size: var(--font-size-heading); font-weight: var(--font-weight-bold); line-height: var(--line-height-heading); color: var(--color-neutral-900); }
+        h3 { font-size: var(--font-size-title); font-weight: var(--font-weight-semibold); line-height: var(--line-height-heading); color: var(--color-neutral-800); }
+        h4 { font-size: var(--font-size-subtitle); font-weight: var(--font-weight-semibold); line-height: var(--line-height-heading); color: var(--color-neutral-800); }
+        p { font-size: var(--font-size-body); line-height: var(--line-height-body); color: var(--color-neutral-700); }
+        small, .text-caption { font-size: var(--font-size-caption); color: var(--color-neutral-500); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: var(--space-2); min-height: 44px; padding: var(--space-3) var(--space-6);
+            font-size: var(--font-size-body); font-weight: var(--font-weight-semibold);
+            border-radius: var(--radius-md); transition: all 0.2s ease;
+            cursor: pointer; border: none; text-align: center; white-space: nowrap;
+        }
+        .btn:focus-visible { outline: none; box-shadow: var(--state-focus-ring); }
+        .btn:active { transform: scale(0.98); }
+        .btn--primary { background: var(--color-primary-600); color: #ffffff; }
+        .btn--primary:hover { background: var(--color-primary-700); opacity: var(--state-hover-opacity); }
+        .btn--secondary { background: var(--color-surface); color: var(--color-primary-600); border: 1.5px solid var(--color-primary-600); }
+        .btn--secondary:hover { background: var(--color-primary-50); }
+        .btn--danger { background: var(--color-error); color: #ffffff; }
+        .btn--danger:hover { opacity: var(--state-hover-opacity); }
+        .btn:disabled, .btn--disabled { opacity: var(--state-disabled-opacity); cursor: not-allowed; pointer-events: none; }
+
+        .card {
+            background: var(--color-surface); border: 1px solid var(--color-neutral-200);
+            box-shadow: var(--shadow-low); border-radius: var(--radius-lg); padding: var(--space-6);
+        }
+        .card__header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: var(--space-3) var(--space-6); background: var(--color-primary-600);
+            color: #ffffff; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin: calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-6) calc(var(--space-6) * -1);
+        }
+        .card__header-title { font-size: var(--font-size-subtitle); font-weight: var(--font-weight-semibold); color: #ffffff; }
+
+        .form-group { margin-bottom: var(--space-4); position: relative; }
+        .form-label { display: block; font-size: var(--font-size-body); font-weight: var(--font-weight-semibold); color: var(--color-neutral-700); margin-bottom: var(--space-2); }
+        .input-wrap { position: relative; }
+        .input-icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--color-neutral-400); display: flex; align-items: center; pointer-events: none; }
+        .form-input {
+            width: 100%; padding: var(--space-3) var(--space-4) var(--space-3) 40px;
+            border: 1.5px solid var(--color-neutral-200); border-radius: var(--radius-md);
+            font-size: var(--font-size-body); color: var(--color-neutral-800);
+            background: var(--color-neutral-50);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            outline: none; min-height: 44px;
+        }
+        .form-input:focus { border-color: var(--color-primary-500); background: var(--color-surface); box-shadow: var(--state-focus-ring); }
+        .form-input::placeholder { color: var(--color-neutral-400); font-size: var(--font-size-body); }
+        .form-input--error { border-color: var(--color-error); }
+        .form-input--error:focus { box-shadow: 0 0 0 3px rgba(220,38,38,0.2); }
+
+        .mock-hint {
+            display: none; align-items: center; gap: 6px;
+            margin-top: 6px; padding: 7px 11px;
+            background: #fffbeb; border: 1px solid #fde68a;
+            border-radius: 7px; font-size: 12px; font-weight: 600; color: #b45309;
+            animation: hintFade 0.2s ease;
+        }
+        .mock-hint.show { display: flex; }
+        @keyframes hintFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(15,23,42,0.5);
+            z-index: 1000; align-items: center; justify-content: center; padding: var(--space-4);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: var(--color-surface); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-high); padding: var(--space-8);
+            max-width: 480px; width: 100%; animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-card__title { font-size: var(--font-size-title); font-weight: var(--font-weight-semibold); color: var(--color-neutral-800); margin-bottom: var(--space-3); }
+        .modal-card__body { font-size: var(--font-size-body); color: var(--color-neutral-600); margin-bottom: var(--space-6); line-height: 1.8; }
+        .modal-card__actions { display: flex; gap: var(--space-3); justify-content: flex-end; flex-wrap: wrap; }
+
+        .toast {
+            position: fixed; bottom: var(--space-8); left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--color-neutral-800); color: #ffffff;
+            padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
+            font-size: var(--font-size-body); font-weight: var(--font-weight-medium);
+            box-shadow: var(--shadow-high); z-index: 2000;
+            opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none;
+        }
+        .toast.active { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+
+        /* ログインページ固有 */
+        .login-wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; }
+
+        .logo-area { text-align: center; margin-bottom: var(--space-8); }
+
+        .logo-svg-wrap {
+            width: 72px; height: 72px; background: var(--color-surface);
+            border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;
+            margin: 0 auto var(--space-4); box-shadow: var(--shadow-medium);
+        }
+
+        .version-badge {
+            display: inline-flex; align-items: center; gap: var(--space-1);
+            background: var(--color-primary-50); color: var(--color-primary-600);
+            border-radius: var(--radius-full); padding: var(--space-1) var(--space-3);
+            font-size: var(--font-size-caption); font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-3); border: 1px solid var(--color-primary-100);
+        }
+
+        .version-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary-600); }
+
+        .logo-name { font-size: 26px; font-weight: var(--font-weight-bold); letter-spacing: -0.5px; color: var(--color-neutral-800); }
+        .logo-name span { color: var(--color-primary-600); }
+        .logo-tagline { font-size: var(--font-size-body); color: var(--color-neutral-400); margin-top: var(--space-1); }
+
+        .login-card {
+            background: var(--color-surface); border: 1px solid var(--color-neutral-200);
+            border-radius: var(--radius-lg); padding: 36px 32px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .user-type-selector {
+            display: flex; background: var(--color-neutral-100);
+            border-radius: var(--radius-md); padding: var(--space-1);
+            margin-bottom: var(--space-6); gap: var(--space-1);
+        }
+
+        .user-type-btn {
+            flex: 1; padding: 10px 8px; border: none; border-radius: var(--radius-sm);
+            font-size: var(--font-size-body); font-weight: var(--font-weight-semibold);
+            cursor: pointer; transition: all 0.2s ease;
+            color: var(--color-neutral-400); background: transparent; min-height: 44px;
+        }
+        .user-type-btn.active { background: var(--color-surface); color: var(--color-primary-600); box-shadow: var(--shadow-low); }
+        .user-type-btn:focus-visible { outline: none; box-shadow: var(--state-focus-ring); }
+
+        .plan-info {
+            display: none; border-radius: var(--radius-md); overflow: hidden;
+            margin-bottom: 20px; border: 1px solid var(--color-neutral-200);
+        }
+        .plan-info.show { display: block; }
+
+        .plan-row {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            font-size: var(--font-size-caption); background: var(--color-neutral-50);
+            border-bottom: 1px solid var(--color-neutral-100);
+        }
+        .plan-row:last-child { border-bottom: none; }
+        .plan-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dot-free { background: var(--color-accent-500); }
+        .dot-paid { background: var(--color-success); }
+        .plan-row-text { color: var(--color-neutral-600); }
+        .plan-row-text strong { color: var(--color-neutral-700); }
+
+        .login-btn {
+            width: 100%; padding: 13px; background: var(--color-primary-600);
+            color: #ffffff; border: none; border-radius: var(--radius-md);
+            font-size: 15px; font-weight: var(--font-weight-semibold);
+            cursor: pointer; transition: all 0.2s ease; margin-top: var(--space-1);
+            position: relative; overflow: hidden; min-height: 44px;
+            box-shadow: var(--shadow-medium);
+        }
+        .login-btn:hover { background: var(--color-primary-700); transform: translateY(-1px); box-shadow: var(--shadow-high); }
+        .login-btn:focus-visible { outline: none; box-shadow: var(--state-focus-ring); }
+        .login-btn:active { transform: scale(0.98); }
+
+        .btn-inner { display: flex; align-items: center; justify-content: center; gap: var(--space-2); }
+        .btn-loading { display: none; align-items: center; justify-content: center; gap: var(--space-2); }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white; border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .sub-links { display: flex; justify-content: space-between; margin-top: var(--space-4); }
+
+        .sub-link {
+            font-size: var(--font-size-caption); color: var(--color-neutral-500);
+            text-decoration: none; cursor: pointer; font-weight: var(--font-weight-medium);
+            transition: color 0.2s; padding: var(--space-1);
+        }
+        .sub-link:hover { color: var(--color-primary-600); }
+        .sub-link:focus-visible { outline: none; box-shadow: var(--state-focus-ring); border-radius: 4px; }
+
+        .divider { display: flex; align-items: center; margin: 20px 0; gap: 10px; }
+        .divider-line { flex: 1; height: 1px; background: var(--color-neutral-200); }
+        .divider-text { font-size: var(--font-size-caption); color: var(--color-neutral-400); white-space: nowrap; }
+
+        .security-badge { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: var(--font-size-caption); color: var(--color-neutral-500); }
+        .security-badge svg { color: var(--color-success); flex-shrink: 0; }
+
+        @media (max-width: 1024px) { .login-wrapper { max-width: 420px; } }
+        @media (max-width: 768px) { .login-card { padding: 28px 24px; } .login-wrapper { max-width: 100%; } }
+        @media (max-width: 480px) {
+            .login-card { padding: 24px 16px; }
+            .logo-name { font-size: 22px; }
+            .logo-svg-wrap { width: 60px; height: 60px; }
+            .user-type-btn { font-size: 13px; padding: 10px 4px; }
+            .sub-links { flex-direction: column; align-items: center; gap: var(--space-2); }
+        }
+
+        /* ===================== */
+        /* ガイドツアー機能（スマホ・タブレット対応版） */
+        /* ===================== */
+        .guide-blocker {
+            position: fixed; inset: 0; z-index: 495;
+            background: transparent;
+            display: none;
+            touch-action: none;
+        }
+
+        .guide-highlight {
+            position: fixed; z-index: 501;
+            border-radius: 14px;
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.55);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: none;
+        }
+
+        .guide-tooltip {
+            position: fixed; z-index: 502;
+            background: white; border-radius: 16px;
+            padding: 18px 20px; width: 300px;
+            box-shadow: 0 12px 36px rgba(15,23,42,0.25);
+            transition: all 0.4s ease;
+            display: none;
+        }
+
+        .guide-tooltip-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .guide-step-badge {
+            font-size: 11px; font-weight: 700; color: var(--color-primary-600);
+            background: var(--color-primary-50); border: 1px solid var(--color-primary-200);
+            border-radius: 20px; padding: 3px 11px;
+        }
+
+        .guide-close-btn {
+            background: none; border: none; color: var(--color-neutral-400);
+            font-size: 15px; cursor: pointer; line-height: 1;
+            padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+            min-width: 36px; min-height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-close-btn:hover { background: var(--color-neutral-100); color: var(--color-neutral-600); }
+
+        .guide-tooltip-title {
+            font-size: 14px; font-weight: 700; color: var(--color-neutral-800); margin-bottom: 6px;
+        }
+
+        .guide-tooltip-text {
+            font-size: 13px; color: var(--color-neutral-600); line-height: 1.7; margin-bottom: 16px;
+        }
+
+        .guide-tooltip-footer {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .guide-skip-btn {
+            background: none; border: none; color: var(--color-neutral-400);
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+            min-height: 40px; padding: 0 8px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-skip-btn:hover { color: var(--color-neutral-600); text-decoration: underline; }
+
+        .guide-next-btn {
+            background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+            color: white; border: none; border-radius: 9px;
+            padding: 9px 20px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(37,99,235,0.35);
+            min-height: 40px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-next-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(37,99,235,0.45); }
+
+        .guide-arrow {
+            position: fixed; width: 14px; height: 14px;
+            background: white; transform: rotate(45deg);
+            z-index: 502; display: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .guide-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 300;
+            background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+            color: white; border: none; border-radius: 50px;
+            padding: 13px 20px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+            display: flex; align-items: center; gap: 7px;
+            transition: all 0.25s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-fab:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(37,99,235,0.5); }
+
+        .welcome-icon {
+            width: 52px; height: 52px; background: var(--color-primary-50);
+            border-radius: 14px; margin-bottom: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
+        }
+
+        @media (max-width: 480px) {
+            .guide-tooltip { width: calc(100% - 40px); max-width: 300px; }
+            .guide-fab { padding: 11px 16px; font-size: 12px; bottom: 16px; right: 16px; }
+            .modal-card { padding: var(--space-6) var(--space-4); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ようこそモーダル（初回表示） -->
+    <div class="modal-overlay" id="welcome-modal">
+        <div class="modal-card">
+            <div class="welcome-icon">📘</div>
+            <h3 class="modal-card__title">初めてご覧になる方へ</h3>
+            <p class="modal-card__body">
+                画面右下の「🧭 使い方を見る」ボタンを押すと、<br>
+                ログイン画面の操作方法を順番に確認できます。<br><br>
+                先に使い方を確認してから、実際に操作してみることをおすすめします。
+            </p>
+            <div class="modal-card__actions">
+                <button class="btn btn--secondary" onclick="closeWelcomeModal()">後で見る</button>
+                <button class="btn btn--primary" onclick="closeWelcomeModalAndStartGuide()">🧭 使い方を見る</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-wrapper">
+
+        <div class="logo-area">
+            <div class="logo-svg-wrap">
+                <svg width="42" height="42" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                    <circle cx="20" cy="20" r="18" stroke="url(#g1)" stroke-width="2.2" fill="none"/>
+                    <path d="M20 28C20 28 10 22 10 15.5C10 12.4 12.4 10 15.5 10C17.2 10 18.8 10.8 20 12C21.2 10.8 22.8 10 24.5 10C27.6 10 30 12.4 30 15.5C30 22 20 28 20 28Z" fill="url(#g2)"/>
+                    <path d="M15 19.5L18.5 23L25 16" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="g1" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#3b82f6"/>
+                            <stop offset="100%" stop-color="#2563eb"/>
+                        </linearGradient>
+                        <linearGradient id="g2" x1="10" y1="10" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#3b82f6"/>
+                            <stop offset="100%" stop-color="#2563eb"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="version-badge">
+                <div class="version-dot"></div>
+                AI Powered
+            </div>
+            <div class="logo-name">CareLink <span>AI</span></div>
+            <div class="logo-tagline">介護連携支援プラットフォーム</div>
+        </div>
+
+        <div class="login-card">
+
+            <div class="user-type-selector">
+                <button class="user-type-btn active" id="btn-caremanager"
+                    onclick="selectUserType('caremanager')">
+                    ケアマネジャー
+                </button>
+                <button class="user-type-btn" id="btn-jigyosho"
+                    onclick="selectUserType('jigyosho')">
+                    事業所スタッフ
+                </button>
+            </div>
+
+            <div class="plan-info" id="plan-info">
+                <div class="plan-row">
+                    <div class="plan-dot dot-free"></div>
+                    <div class="plan-row-text"><strong>無料プラン：</strong>受信ごとに1回のみ閲覧可能</div>
+                </div>
+                <div class="plan-row">
+                    <div class="plan-dot dot-paid"></div>
+                    <div class="plan-row-text"><strong>有料・むすぼな導入：</strong>無制限閲覧・編集・保存</div>
+                </div>
+            </div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="email-input">メールアドレス</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </span>
+                        <input type="text" class="form-input" id="email-input"
+                            placeholder="example@care.com" maxlength="254"
+                            onfocus="showHint('email-hint')" onblur="hideHint('email-hint')"/>
+                    </div>
+                    <div class="mock-hint" id="email-hint">
+                        💡 モックなので適当に入力してください（@なしでもOK）
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password-input">パスワード</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </span>
+                        <input type="password" class="form-input" id="password-input"
+                            placeholder="パスワードを入力" maxlength="128"
+                            onfocus="showHint('password-hint')" onblur="hideHint('password-hint')"/>
+                    </div>
+                    <div class="mock-hint" id="password-hint">
+                        💡 モックなので何を入力してもログインできます
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="login-btn">
+                    <div class="btn-inner" id="btn-text">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <polyline points="10 17 15 12 10 7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        ログイン
+                    </div>
+                    <div class="btn-loading" id="btn-loading">
+                        <div class="spinner"></div>
+                        認証中...
+                    </div>
+                </button>
+            </form>
+
+            <div class="sub-links">
+                <a class="sub-link" onclick="alert('パスワードリセットメールを送信します')">パスワードをお忘れの方</a>
+                <a class="sub-link" onclick="alert('管理者にお問い合わせください')">新規登録</a>
+            </div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">セキュリティ情報</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="security-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                本システムは介護サービス関係者専用です
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- ガイドツアー要素 -->
+    <!-- ===================== -->
+    <div class="guide-blocker" id="guide-blocker"></div>
+    <div class="guide-highlight" id="guide-highlight"></div>
+    <div class="guide-arrow" id="guide-arrow"></div>
+    <div class="guide-tooltip" id="guide-tooltip">
+        <div class="guide-tooltip-header">
+            <span class="guide-step-badge" id="guide-step-badge">1 / 4</span>
+            <button class="guide-close-btn" onclick="skipGuide()">✕</button>
+        </div>
+        <div class="guide-tooltip-title" id="guide-tooltip-title"></div>
+        <div class="guide-tooltip-text" id="guide-tooltip-text"></div>
+        <div class="guide-tooltip-footer">
+            <button class="guide-skip-btn" onclick="skipGuide()">スキップ</button>
+            <button class="guide-next-btn" id="guide-next-btn" onclick="nextStep()">次へ →</button>
+        </div>
+    </div>
+
+    <button class="guide-fab" id="guide-fab" onclick="startGuide()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        使い方を見る
+    </button>
+
+    <script>
+        let currentUserType = 'caremanager';
+
+        function selectUserType(type) {
+            currentUserType = type;
+            document.getElementById('btn-caremanager').classList.remove('active');
+            document.getElementById('btn-jigyosho').classList.remove('active');
+            document.getElementById('btn-' + type).classList.add('active');
+            document.getElementById('plan-info').classList.toggle('show', type === 'jigyosho');
+        }
+
+        function showHint(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function hideHint(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const btn = document.getElementById('login-btn');
+            document.getElementById('btn-text').style.display = 'none';
+            document.getElementById('btn-loading').style.display = 'flex';
+            btn.style.opacity = '0.9';
+
+            setTimeout(() => {
+                if (currentUserType === 'caremanager') {
+                    window.location.href = 'step2_input.html';
+                } else {
+                    window.location.href = 'step5_ad.html';
+                }
+            }, 1500);
+        }
+
+        // ===================== //
+        // ようこそモーダル（初回案内）
+        // ===================== //
+        function closeWelcomeModal() {
+            document.getElementById('welcome-modal').classList.remove('active');
+        }
+
+        function closeWelcomeModalAndStartGuide() {
+            closeWelcomeModal();
+            startGuide();
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('welcome-modal').classList.add('active');
+            }, 600);
+        });
+
+        // ===================== //
+        // ガイドツアー機能（ケアマネ／事業所スタッフで内容を分岐）
+        // ===================== //
+        const guideStepsCaremanager = [
+            {
+                target: '.user-type-selector',
+                position: 'bottom',
+                title: '① ログインする立場を選びます',
+                text: '現在「ケアマネジャー」が選択されています。事業所スタッフとして入る場合は右側のボタンに切り替えてください。'
+            },
+            {
+                target: '#email-input',
+                position: 'bottom',
+                title: '② メールアドレスを入力',
+                text: 'モックなので実際のメールアドレスは不要です。何か文字を入力すれば次に進めます。'
+            },
+            {
+                target: '#password-input',
+                position: 'bottom',
+                title: '③ パスワードを入力',
+                text: 'こちらも実際のパスワードは不要です。何か入力してください。'
+            },
+            {
+                target: '#login-btn',
+                position: 'top',
+                title: '④ ログインする',
+                text: 'ケアマネジャーとしてログインすると、会議録を作成する「入力画面」に進みます。'
+            }
+        ];
+
+        const guideStepsJigyosho = [
+            {
+                target: '.user-type-selector',
+                position: 'bottom',
+                title: '① ログインする立場を選びます',
+                text: '現在「事業所スタッフ」が選択されています。ケアマネジャーとして入る場合は左側のボタンに切り替えてください。'
+            },
+            {
+                target: '#plan-info',
+                position: 'bottom',
+                title: '② プランの違いを確認',
+                text: '無料プランと有料プラン（むすぼな導入）での閲覧制限の違いがここに表示されます。'
+            },
+            {
+                target: '#email-input',
+                position: 'bottom',
+                title: '③ メールアドレスを入力',
+                text: 'モックなので実際のメールアドレスは不要です。何か文字を入力すれば次に進めます。'
+            },
+            {
+                target: '#password-input',
+                position: 'bottom',
+                title: '④ パスワードを入力',
+                text: 'こちらも実際のパスワードは不要です。何か入力してください。'
+            },
+            {
+                target: '#login-btn',
+                position: 'top',
+                title: '⑤ ログインする',
+                text: '事業所スタッフとしてログインすると、広告画面を経て事業所ダッシュボードに進みます。'
+            }
+        ];
+
+        let currentGuideSteps = guideStepsCaremanager;
+        let guideActive = false;
+        let currentGuideIndex = -1;
+
+        function startGuide() {
+            currentGuideSteps = (currentUserType === 'jigyosho') ? guideStepsJigyosho : guideStepsCaremanager;
+            guideActive = true;
+            currentGuideIndex = -1;
+            document.getElementById('guide-fab').style.display = 'none';
+            document.getElementById('guide-blocker').style.display = 'block';
+            showStep(0);
+        }
+
+        function showStep(index) {
+            if (index < 0 || index >= currentGuideSteps.length) {
+                endGuide();
+                return;
+            }
+            currentGuideIndex = index;
+            const step = currentGuideSteps[index];
+            const target = document.querySelector(step.target);
+
+            if (!target) {
+                nextStep();
+                return;
+            }
+
+            document.getElementById('guide-highlight').style.display = 'block';
+            document.getElementById('guide-tooltip').style.display = 'block';
+            document.getElementById('guide-arrow').style.display = 'block';
+
+            document.getElementById('guide-step-badge').textContent = (index + 1) + ' / ' + currentGuideSteps.length;
+            document.getElementById('guide-tooltip-title').textContent = step.title;
+            document.getElementById('guide-tooltip-text').textContent = step.text;
+            document.getElementById('guide-next-btn').textContent = (index === currentGuideSteps.length - 1) ? '完了 ✓' : '次へ →';
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // スクロール完了（要素位置が安定）を検知してから配置する
+            // ※ スマホ等の低速スクロールでも位置ズレが起きないようにするための処理
+            waitForStablePosition(target, () => {
+                positionGuide(target, step.position);
+            });
+        }
+
+        // 要素の位置が安定するまで待機する（最大1.5秒でタイムアウト）
+        function waitForStablePosition(target, callback, maxWait = 1500) {
+            let lastTop = null;
+            let stableCount = 0;
+            const startTime = Date.now();
+
+            function check() {
+                const rect = target.getBoundingClientRect();
+                if (lastTop !== null && Math.abs(rect.top - lastTop) < 0.5) {
+                    stableCount++;
+                } else {
+                    stableCount = 0;
+                }
+                lastTop = rect.top;
+
+                if (stableCount >= 3 || Date.now() - startTime > maxWait) {
+                    callback();
+                } else {
+                    requestAnimationFrame(check);
+                }
+            }
+            requestAnimationFrame(check);
+        }
+
+        function positionGuide(target, position) {
+            const rect = target.getBoundingClientRect();
+            const padding = 8;
+
+            const highlight = document.getElementById('guide-highlight');
+            highlight.style.left = (rect.left - padding) + 'px';
+            highlight.style.top = (rect.top - padding) + 'px';
+            highlight.style.width = (rect.width + padding * 2) + 'px';
+            highlight.style.height = (rect.height + padding * 2) + 'px';
+
+            const tooltip = document.getElementById('guide-tooltip');
+            const gap = 18;
+            const tooltipWidth = tooltip.offsetWidth || 300;
+            const tooltipHeight = tooltip.offsetHeight || 150;
+
+            // iOSのアドレスバー変動等に対応し、visualViewportがあれば優先的に使用
+            const viewportW = window.innerWidth;
+            const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+            let top, left;
+
+            if (position === 'bottom') {
+                top = rect.bottom + gap;
+                left = rect.left + rect.width / 2 - tooltipWidth / 2;
+            } else if (position === 'top') {
+                top = rect.top - gap - tooltipHeight;
+                left = rect.left + rect.width / 2 - tooltipWidth / 2;
+            } else if (position === 'right') {
+                top = rect.top + rect.height / 2 - tooltipHeight / 2;
+                left = rect.right + gap;
+            } else {
+                top = rect.top + rect.height / 2 - tooltipHeight / 2;
+                left = rect.left - gap - tooltipWidth;
+            }
+
+            // スマホの縦画面など、画面が低い場合に上下反転して画面内に収める
+            if (position === 'bottom' && top + tooltipHeight > viewportH - 12) {
+                top = rect.top - gap - tooltipHeight;
+            } else if (position === 'top' && top < 12) {
+                top = rect.bottom + gap;
+            }
+
+            left = Math.max(12, Math.min(left, viewportW - tooltipWidth - 12));
+            top = Math.max(12, Math.min(top, viewportH - tooltipHeight - 12));
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+
+            const arrow = document.getElementById('guide-arrow');
+            if (position === 'bottom' || position === 'top') {
+                arrow.style.left = (rect.left + rect.width / 2 - 7) + 'px';
+                arrow.style.top = (top < rect.top) ? (top + tooltipHeight - 7) + 'px' : (top - 7) + 'px';
+            } else {
+                arrow.style.top = (rect.top + rect.height / 2 - 7) + 'px';
+                arrow.style.left = (position === 'right') ? (left - 7) + 'px' : (left + tooltipWidth - 7) + 'px';
+            }
+        }
+
+        function nextStep() {
+            if (currentGuideIndex + 1 >= currentGuideSteps.length) {
+                endGuide();
+            } else {
+                showStep(currentGuideIndex + 1);
+            }
+        }
+
+        function skipGuide() {
+            endGuide();
+        }
+
+        function endGuide() {
+            guideActive = false;
+            document.getElementById('guide-blocker').style.display = 'none';
+            document.getElementById('guide-highlight').style.display = 'none';
+            document.getElementById('guide-tooltip').style.display = 'none';
+            document.getElementById('guide-arrow').style.display = 'none';
+            document.getElementById('guide-fab').style.display = 'flex';
+        }
+
+        // リサイズ・画面回転・iOSのビューポート変動の再配置（デバウンス処理つき）
+        let resizeDebounceTimer = null;
+        function handleGuideReposition() {
+            clearTimeout(resizeDebounceTimer);
+            resizeDebounceTimer = setTimeout(() => {
+                if (guideActive && currentGuideIndex >= 0) {
+                    const step = currentGuideSteps[currentGuideIndex];
+                    const target = document.querySelector(step.target);
+                    if (target) positionGuide(target, step.position);
+                }
+            }, 150);
+        }
+
+        window.addEventListener('resize', handleGuideReposition);
+        window.addEventListener('orientationchange', handleGuideReposition);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleGuideReposition);
+            window.visualViewport.addEventListener('scroll', handleGuideReposition);
+        }
+    </script>
+</body>
+</html>
