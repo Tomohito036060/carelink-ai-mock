@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareLink AI - 利用者詳細</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background: #f8fafc; min-height: 100vh;
+            padding: 20px; position: relative; overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
+        }
+
+        .bg-orb {
+            position: fixed; border-radius: 50%;
+            filter: blur(80px); opacity: 0.18; z-index: 0; pointer-events: none;
+        }
+
+        .bg-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #818cf8, #6366f1); top: -200px; left: -100px; }
+        .bg-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #34d399, #10b981); bottom: -100px; right: -100px; }
+
+        .page-wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+
+        /* ヘッダー */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.88); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px;
+            padding: 14px 22px; margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.07);
+            flex-wrap: wrap; gap: 10px;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 10px; }
+
+        .header-logo-wrap {
+            width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+        }
+
+        .header-title { font-size: 16px; font-weight: 700; color: #1e293b; letter-spacing: -0.3px; }
+
+        .header-title span {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .header-user {
+            display: flex; align-items: center; gap: 8px; background: #f1f5f9;
+            border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: #64748b;
+        }
+
+        .user-avatar {
+            width: 24px; height: 24px; background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: white; font-weight: 700;
+        }
+
+        /* パンくず */
+        .breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: #94a3b8; margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-link {
+            color: #6366f1; cursor: pointer; font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .breadcrumb-link:hover { opacity: 0.7; }
+
+        .breadcrumb-sep { color: #cbd5e1; }
+        .breadcrumb-current { color: #1e293b; font-weight: 600; }
+
+        /* 利用者プロフィールカード */
+        .profile-card {
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 18px;
+            overflow: hidden; margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.08);
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 20px 24px; color: white;
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4);
+            display: flex; align-items: center; justify-content: center; font-size: 32px;
+        }
+
+        .profile-main { flex: 1; }
+        .profile-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .profile-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .profile-tag {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 20px; padding: 3px 11px; font-size: 12px; font-weight: 600;
+        }
+
+        .profile-status-wrap { flex-shrink: 0; }
+
+        .profile-status {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px; padding: 10px 16px; text-align: center;
+        }
+
+        .profile-status-label { font-size: 11px; opacity: 0.85; margin-bottom: 4px; }
+        .profile-status-value { font-size: 14px; font-weight: 700; }
+
+        .profile-body {
+            padding: 18px 24px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 600px) { .profile-body { grid-template-columns: 1fr 1fr; } }
+
+        .profile-info-item {}
+        .profile-info-label { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 3px; }
+        .profile-info-value { font-size: 13px; color: #1e293b; font-weight: 600; }
+
+        /* ステータスサマリー */
+        .status-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; margin-bottom: 20px;
+        }
+
+        @media (max-width: 500px) { .status-row { grid-template-columns: 1fr; } }
+
+        .status-card {
+            background: rgba(255,255,255,0.88); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.06);
+        }
+
+        .status-card-label { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+        .status-card-value {
+            font-size: 14px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #10b981; flex-shrink: 0; }
+        .dot-red { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+        .dot-yellow { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; }
+
+        /* セクション */
+        .section-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+        }
+
+        .section-title {
+            font-size: 15px; font-weight: 700; color: #1e293b;
+            display: flex; align-items: center; gap: 7px;
+        }
+
+        .section-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+
+        /* データファイルリスト */
+        .data-list {
+            background: rgba(255,255,255,0.88); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px;
+            overflow: hidden; margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+        }
+
+        .data-item {
+            display: flex; align-items: flex-start; gap: 14px;
+            padding: 14px 18px; border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s; position: relative;
+        }
+
+        .data-item:last-child { border-bottom: none; }
+        .data-item:hover { background: #f8fafc; }
+        .data-item.unread-item { background: #fafbff; border-left: 3px solid #6366f1; }
+
+        .data-item-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+
+        .di-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .di-green { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+        .di-purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+
+        .data-item-body { flex: 1; }
+        .data-item-title { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
+        .data-item-sub { font-size: 12px; color: #64748b; line-height: 1.5; }
+        .data-item-time { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+
+        .data-item-actions {
+            display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;
+        }
+
+        .action-badge {
+            font-size: 11px; font-weight: 700; border-radius: 20px;
+            padding: 3px 9px; white-space: nowrap;
+        }
+
+        .ab-unsent { background: #fee2e2; color: #dc2626; }
+        .ab-sent { background: #d1fae5; color: #059669; }
+
+        .data-action-btns { display: flex; gap: 5px; }
+
+        .btn-data-action {
+            display: flex; align-items: center; gap: 4px;
+            border: 1px solid #e2e8f0; border-radius: 7px;
+            padding: 5px 10px; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; font-family: inherit; background: white; color: #64748b;
+        }
+
+        .btn-data-action:hover { background: #eef2ff; border-color: #c7d2fe; color: #6366f1; }
+
+        .btn-data-open {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none;
+        }
+
+        .btn-data-open:hover { opacity: 0.9; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; }
+
+        /* メモカード */
+        .memo-card {
+            background: rgba(255,255,255,0.88); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px;
+            overflow: hidden; margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+        }
+
+        .memo-card-header {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 14px 20px; color: white;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .memo-card-icon {
+            width: 34px; height: 34px; border-radius: 9px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center; font-size: 17px;
+        }
+
+        .memo-card-title { font-size: 14px; font-weight: 700; }
+        .memo-card-sub { font-size: 12px; opacity: 0.9; margin-top: 1px; }
+
+        .memo-card-body { padding: 18px 20px; }
+
+        .memo-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+
+        .memo-item {
+            background: #fffbf0; border: 1px solid #fde68a;
+            border-radius: 10px; padding: 12px 14px;
+        }
+
+        .memo-item-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .memo-item-author { font-size: 12px; font-weight: 700; color: #d97706; }
+        .memo-item-date { font-size: 11px; color: #94a3b8; }
+        .memo-item-text { font-size: 13px; color: #1e293b; line-height: 1.6; }
+
+        .memo-new-area {
+            display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;
+        }
+
+        .memo-new-input {
+            flex: 1; min-width: 200px; padding: 10px 13px;
+            border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 13px; color: #1e293b; background: #f8fafc;
+            resize: none; outline: none; line-height: 1.6;
+            font-family: inherit; transition: all 0.2s;
+        }
+
+        .memo-new-input:focus { border-color: #f59e0b; background: white; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        .memo-new-input::placeholder { color: #cbd5e1; font-size: 12px; }
+
+        .btn-memo-add {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            font-family: inherit; transition: all 0.2s; white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(245,158,11,0.3);
+        }
+
+        .btn-memo-add:hover { transform: translateY(-1px); opacity: 0.92; }
+
+        /* 返送ボタン */
+        .return-card {
+            background: rgba(255,255,255,0.88); backdrop-filter: blur(16px);
+            border: 1.5px solid #a5b4fc; border-radius: 16px;
+            padding: 20px 22px; margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.1);
+        }
+
+        .return-card-title {
+            font-size: 14px; font-weight: 700; color: #1e293b;
+            margin-bottom: 4px; display: flex; align-items: center; gap: 7px;
+        }
+
+        .return-card-sub { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+
+        .btn-return {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s;
+            box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit; position: relative; overflow: hidden;
+        }
+
+        .btn-return::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            transition: left 0.4s;
+        }
+
+        .btn-return:hover::before { left: 100%; }
+        .btn-return:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.42); }
+
+        /* 期限アラート */
+        .deadline-alert {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1.5px solid #fecaca; border-radius: 12px;
+            padding: 12px 16px; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: #dc2626; font-weight: 600;
+        }
+
+        /* トースト */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e293b; color: white; border-radius: 12px;
+            padding: 12px 20px; font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease; z-index: 400; white-space: nowrap;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* モーダル */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+            z-index: 200; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-card {
+            background: white; border-radius: 20px; padding: 28px;
+            max-width: 400px; width: 100%;
+            box-shadow: 0 20px 60px rgba(15,23,42,0.2);
+            animation: modalIn 0.3s ease; text-align: center;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.92) translateY(16px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-icon-wrap {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            margin: 0 auto 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 28px;
+        }
+
+        .modal-title { font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+        .modal-desc { font-size: 13px; color: #64748b; line-height: 1.7; margin-bottom: 22px; }
+
+        .modal-btn-ok {
+            width: 100%; padding: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 10px;
+            font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+        }
+
+        /* ===================== */
+        /* ガイドツアー機能（スマホ・タブレット対応版） */
+        /* ===================== */
+        .guide-blocker {
+            position: fixed; inset: 0; z-index: 495;
+            background: transparent;
+            display: none;
+            touch-action: none;
+        }
+
+        .guide-highlight {
+            position: fixed; z-index: 501;
+            border-radius: 14px;
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.55);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: none;
+        }
+
+        .guide-tooltip {
+            position: fixed; z-index: 502;
+            background: white; border-radius: 16px;
+            padding: 18px 20px; width: 300px;
+            box-shadow: 0 12px 36px rgba(15,23,42,0.25);
+            transition: all 0.4s ease;
+            display: none;
+        }
+
+        .guide-tooltip-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .guide-step-badge {
+            font-size: 11px; font-weight: 700; color: #6366f1;
+            background: #eef2ff; border: 1px solid #c7d2fe;
+            border-radius: 20px; padding: 3px 11px;
+        }
+
+        .guide-close-btn {
+            background: none; border: none; color: #94a3b8;
+            font-size: 15px; cursor: pointer; line-height: 1;
+            padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+            min-width: 36px; min-height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-close-btn:hover { background: #f1f5f9; color: #475569; }
+
+        .guide-tooltip-title {
+            font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 6px;
+        }
+
+        .guide-tooltip-text {
+            font-size: 13px; color: #64748b; line-height: 1.7; margin-bottom: 16px;
+        }
+
+        .guide-tooltip-footer {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .guide-skip-btn {
+            background: none; border: none; color: #94a3b8;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+            min-height: 40px; padding: 0 8px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-skip-btn:hover { color: #64748b; text-decoration: underline; }
+
+        .guide-next-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 9px;
+            padding: 9px 20px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(99,102,241,0.35);
+            min-height: 40px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-next-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(99,102,241,0.45); }
+
+        .guide-arrow {
+            position: fixed; width: 14px; height: 14px;
+            background: white; transform: rotate(45deg);
+            z-index: 502; display: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .guide-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 300;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 50px;
+            padding: 13px 20px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+            display: flex; align-items: center; gap: 7px;
+            transition: all 0.25s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .guide-fab:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(99,102,241,0.5); }
+
+        @media (max-width: 480px) {
+            .profile-body { grid-template-columns: 1fr 1fr; }
+            .status-row { grid-template-columns: 1fr; }
+            .guide-tooltip { width: calc(100% - 40px); max-width: 300px; }
+            .guide-fab { padding: 11px 16px; font-size: 12px; bottom: 16px; right: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <!-- トースト -->
+    <div class="toast" id="toast">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- 返送完了モーダル -->
+    <div class="modal-overlay" id="return-modal">
+        <div class="modal-card">
+            <div class="modal-icon-wrap">✅</div>
+            <div class="modal-title">ケアマネへ返送しました</div>
+            <div class="modal-desc">
+                山田 太郎 ケアマネジャーへ<br>
+                訪問介護計画書を返送しました。<br><br>
+                <strong>クラウドフォルダへの自動保存が完了しました。</strong>
+            </div>
+            <button class="modal-btn-ok" onclick="closeReturnModal()">確認しました</button>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-logo-wrap">
+                    <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+                        <path d="M20 28C20 28 10 22 10 15.5C10 12.4 12.4 10 15.5 10C17.2 10 18.8 10.8 20 12C21.2 10.8 22.8 10 24.5 10C27.6 10 30 12.4 30 15.5C30 22 20 28 20 28Z" fill="white" opacity="0.9"/>
+                        <path d="M15 19.5L18.5 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+                    </svg>
+                </div>
+                <div class="header-title">CareLink <span>AI</span></div>
+            </div>
+            <div class="header-user">
+                <div class="user-avatar">訪</div>
+                〇〇訪問介護ステーション
+            </div>
+        </div>
+
+        <!-- パンくず -->
+        <div class="breadcrumb">
+            <span class="breadcrumb-link" onclick="window.location.href='jigyosho_dashboard.html'">
+                ダッシュボード
+            </span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-current">田中 よし子 様</span>
+        </div>
+
+        <!-- 利用者プロフィール -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">👵</div>
+                <div class="profile-main">
+                    <div class="profile-name">田中 よし子 様</div>
+                    <div class="profile-tags">
+                        <span class="profile-tag">84歳・女性</span>
+                        <span class="profile-tag">要介護2</span>
+                        <span class="profile-tag">脳梗塞後遺症</span>
+                        <span class="profile-tag">骨粗鬆症</span>
+                    </div>
+                </div>
+                <div class="profile-status-wrap">
+                    <div class="profile-status">
+                        <div class="profile-status-label">担当ケアマネ</div>
+                        <div class="profile-status-value">山田 太郎</div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-body">
+                <div class="profile-info-item">
+                    <div class="profile-info-label">居住</div>
+                    <div class="profile-info-value">自宅（息子夫婦と同居）</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">利用サービス</div>
+                    <div class="profile-info-value">訪問介護・通所介護・訪問看護・福祉用具</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">最終更新</div>
+                    <div class="profile-info-value">本日 14:32</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ステータスサマリー -->
+        <div class="status-row">
+            <div class="status-card">
+                <div class="status-card-label">受信データ</div>
+                <div class="status-card-value">
+                    <span class="dot-red"></span>
+                    3件（未確認あり）
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-card-label">返送ステータス</div>
+                <div class="status-card-value">
+                    <span class="dot-yellow"></span>
+                    未返送
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-card-label">返送期限</div>
+                <div class="status-card-value">
+                    <span class="dot-red"></span>
+                    3日以内
+                </div>
+            </div>
+        </div>
+
+        <!-- 期限アラート -->
+        <div class="deadline-alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            返送期限まで3日以内です。計画書の確認・返送をお早めにお願いします。
+        </div>
+
+        <!-- 受信データ一覧 -->
+        <div class="section-head">
+            <div class="section-title">
+                <div class="section-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">📥</div>
+                受信データ一覧
+            </div>
+        </div>
+
+        <div class="data-list">
+
+            <!-- 計画書（未返送） -->
+            <div class="data-item unread-item">
+                <div class="data-item-icon di-green">📋</div>
+                <div class="data-item-body">
+                    <div class="data-item-title">訪問介護計画書</div>
+                    <div class="data-item-sub">
+                        山田 太郎 ケアマネより受信<br>
+                        ケアの方向性（案）です。内容を確認・編集のうえ返送してください。
+                    </div>
+                    <div class="data-item-time">本日 14:32 受信</div>
+                </div>
+                <div class="data-item-actions">
+                    <span class="action-badge ab-unsent">未返送</span>
+                    <div class="data-action-btns">
+                        <button class="btn-data-action btn-data-open"
+                            onclick="window.location.href='step6_jigyosho_plan.html'">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            開く
+                        </button>
+                        <button class="btn-data-action" onclick="downloadItem('訪問介護計画書')">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            DL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第4表（未確認） -->
+            <div class="data-item unread-item">
+                <div class="data-item-icon di-blue">📄</div>
+                <div class="data-item-body">
+                    <div class="data-item-title">第4表（担当者会議要点）</div>
+                    <div class="data-item-sub">
+                        山田 太郎 ケアマネより受信<br>
+                        令和6年6月15日 担当者会議の要点です。
+                    </div>
+                    <div class="data-item-time">本日 14:32 受信</div>
+                </div>
+                <div class="data-item-actions">
+                    <span class="action-badge ab-unsent">未確認</span>
+                    <div class="data-action-btns">
+                        <button class="btn-data-action btn-data-open"
+                            onclick="window.location.href='step6_jigyosho_plan.html'">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            開く
+                        </button>
+                        <button class="btn-data-action" onclick="downloadItem('第4表')">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            DL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文字起こし（未確認） -->
+            <div class="data-item unread-item">
+                <div class="data-item-icon di-purple">📝</div>
+                <div class="data-item-body">
+                    <div class="data-item-title">文字起こし生データ</div>
+                    <div class="data-item-sub">
+                        山田 太郎 ケアマネより受信<br>
+                        担当者会議議事録（AIで要約前の元データ）です。
+                    </div>
+                    <div class="data-item-time">本日 14:32 受信</div>
+                </div>
+                <div class="data-item-actions">
+                    <span class="action-badge ab-unsent">未確認</span>
+                    <div class="data-action-btns">
+                        <button class="btn-data-action btn-data-open"
+                            onclick="window.location.href='step6_jigyosho_plan.html'">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                            開く
+                        </button>
+                        <button class="btn-data-action" onclick="downloadItem('文字起こし生データ')">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            DL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 過去データ（返送済み） -->
+            <div class="data-item">
+                <div class="data-item-icon di-green">📋</div>
+                <div class="data-item-body">
+                    <div class="data-item-title">訪問介護計画書（前回）</div>
+                    <div class="data-item-sub">山田 太郎 ケアマネより・令和6年3月分</div>
+                    <div class="data-item-time">2024/03/10 受信</div>
+                </div>
+                <div class="data-item-actions">
+                    <span class="action-badge ab-sent">返送済み</span>
+                    <div class="data-action-btns">
+                        <button class="btn-data-action" onclick="downloadItem('訪問介護計画書（前回）')">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            DL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- メモ機能 -->
+        <div class="section-head">
+            <div class="section-title">
+                <div class="section-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">📌</div>
+                事業所内メモ
+            </div>
+        </div>
+
+        <div class="memo-card">
+            <div class="memo-card-header">
+                <div class="memo-card-icon">📌</div>
+                <div>
+                    <div class="memo-card-title">事業所内メモ</div>
+                    <div class="memo-card-sub">ケアマネには送信されません。事業所内の共有メモです。</div>
+                </div>
+            </div>
+
+            <div class="memo-card-body">
+                <div class="memo-list" id="memo-list">
+                    <div class="memo-item">
+                        <div class="memo-item-header">
+                            <span class="memo-item-author">山本 さくら（サービス提供責任者）</span>
+                            <span class="memo-item-date">本日 15:00</span>
+                        </div>
+                        <div class="memo-item-text">計画書を確認しました。入浴介助の回数について、現在週2回となっていますが、体調を見て週3回に増やすことを検討したほうが良いかもしれません。次回のケアマネとの連絡時に相談します。</div>
+                    </div>
+                    <div class="memo-item">
+                        <div class="memo-item-header">
+                            <span class="memo-item-author">鈴木 太郎（管理者）</span>
+                            <span class="memo-item-date">昨日 11:30</span>
+                        </div>
+                        <div class="memo-item-text">前回の訪問時、利用者本人から「最近少し不安になることがある」とのお話がありました。担当者会議の内容と照らし合わせてフォローアップが必要です。</div>
+                    </div>
+                </div>
+
+                <div class="memo-new-area">
+                    <textarea class="memo-new-input" id="memo-new-input" rows="2"
+                        placeholder="メモを入力してください（事業所内のみ共有されます）"></textarea>
+                    <button class="btn-memo-add" onclick="addMemo()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        追加
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 返送カード -->
+        <div class="return-card">
+            <div class="return-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                計画書をケアマネへ返送する
+            </div>
+            <div class="return-card-sub">計画書の確認・編集・サイン取得が完了したらケアマネへ返送してください</div>
+            <button class="btn-return" onclick="returnToCM()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                計画書を確認・編集して返送する
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- ガイドツアー要素 -->
+    <!-- ===================== -->
+    <div class="guide-blocker" id="guide-blocker"></div>
+    <div class="guide-highlight" id="guide-highlight"></div>
+    <div class="guide-arrow" id="guide-arrow"></div>
+    <div class="guide-tooltip" id="guide-tooltip">
+        <div class="guide-tooltip-header">
+            <span class="guide-step-badge" id="guide-step-badge">1 / 4</span>
+            <button class="guide-close-btn" onclick="skipGuide()">✕</button>
+        </div>
+        <div class="guide-tooltip-title" id="guide-tooltip-title"></div>
+        <div class="guide-tooltip-text" id="guide-tooltip-text"></div>
+        <div class="guide-tooltip-footer">
+            <button class="guide-skip-btn" onclick="skipGuide()">スキップ</button>
+            <button class="guide-next-btn" id="guide-next-btn" onclick="nextStep()">次へ →</button>
+        </div>
+    </div>
+
+    <button class="guide-fab" id="guide-fab" onclick="startGuide()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        使い方を見る
+    </button>
+
+    <script>
+        // メモ追加
+        function addMemo() {
+            const input = document.getElementById('memo-new-input');
+            const text  = input.value.trim();
+            if (!text) return;
+
+            const now   = new Date();
+            const time  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            const item  = document.createElement('div');
+            item.className = 'memo-item';
+            item.innerHTML = `
+                <div class="memo-item-header">
+                    <span class="memo-item-author">担当スタッフ</span>
+                    <span class="memo-item-date">本日 ${time}</span>
+                </div>
+                <div class="memo-item-text">${text}</div>`;
+
+            document.getElementById('memo-list').appendChild(item);
+            input.value = '';
+            showToast('📌 メモを追加しました');
+        }
+
+        // ダウンロード
+        function downloadItem(name) {
+            showToast('📥 ' + name + ' をダウンロードしました');
+        }
+
+        // 返送
+        function returnToCM() {
+            window.location.href = 'step6_jigyosho_plan.html';
+        }
+
+        function closeReturnModal() {
+            document.getElementById('return-modal').classList.remove('show');
+            window.location.href = 'jigyosho_dashboard.html';
+        }
+
+        // トースト
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
+        // ===================== //
+        // ガイドツアー機能（スマホ・タブレット対応版）
+        // ===================== //
+        const guideSteps = [
+            {
+                target: '.profile-card',
+                position: 'bottom',
+                title: '① 利用者情報を確認',
+                text: '利用者の基本情報・担当ケアマネ・利用サービスなどがここにまとまっています。'
+            },
+            {
+                target: '.status-row',
+                position: 'bottom',
+                title: '② 返送ステータスを確認',
+                text: '受信データの件数、返送状況、返送期限が一目でわかります。期限が近いと赤色で表示されます。'
+            },
+            {
+                target: '.data-list',
+                position: 'top',
+                title: '③ 受信データを確認・ダウンロード',
+                text: '「開く」で内容を確認、「DL」でファイルをダウンロードできます。未返送・未確認の項目にはバッジが表示されます。'
+            },
+            {
+                target: '.memo-card',
+                position: 'top',
+                title: '④ 事業所内メモを共有',
+                text: 'ケアマネには送信されない、事業所内だけで共有できるメモです。気づいたことを記録しておきましょう。'
+            },
+            {
+                target: '.btn-return',
+                position: 'top',
+                title: '⑤ ケアマネへ返送',
+                text: '計画書の確認・編集・サイン取得が完了したら、ここから担当ケアマネへ返送します。'
+            }
+        ];
+
+        let guideActive = false;
+        let currentGuideIndex = -1;
+
+        function startGuide() {
+            guideActive = true;
+            currentGuideIndex = -1;
+            document.getElementById('guide-fab').style.display = 'none';
+            document.getElementById('guide-blocker').style.display = 'block';
+            showStep(0);
+        }
+
+        function showStep(index) {
+            if (index < 0 || index >= guideSteps.length) {
+                endGuide();
+                return;
+            }
+            currentGuideIndex = index;
+            const step = guideSteps[index];
+            const target = document.querySelector(step.target);
+
+            if (!target) {
+                nextStep();
+                return;
+            }
+
+            document.getElementById('guide-highlight').style.display = 'block';
+            document.getElementById('guide-tooltip').style.display = 'block';
+            document.getElementById('guide-arrow').style.display = 'block';
+
+            document.getElementById('guide-step-badge').textContent = (index + 1) + ' / ' + guideSteps.length;
+            document.getElementById('guide-tooltip-title').textContent = step.title;
+            document.getElementById('guide-tooltip-text').textContent = step.text;
+            document.getElementById('guide-next-btn').textContent = (index === guideSteps.length - 1) ? '完了 ✓' : '次へ →';
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // スクロール完了（要素位置が安定）を検知してから配置する
+            // ※ スマホ等の低速スクロールでも位置ズレが起きないようにするための処理
+            waitForStablePosition(target, () => {
+                positionGuide(target, step.position);
+            });
+        }
+
+        // 要素の位置が安定するまで待機する（最大1.5秒でタイムアウト）
+        function waitForStablePosition(target, callback, maxWait = 1500) {
+            let lastTop = null;
+            let stableCount = 0;
+            const startTime = Date.now();
+
+            function check() {
+                const rect = target.getBoundingClientRect();
+                if (lastTop !== null && Math.abs(rect.top - lastTop) < 0.5) {
+                    stableCount++;
+                } else {
+                    stableCount = 0;
+                }
+                lastTop = rect.top;
+
+                if (stableCount >= 3 || Date.now() - startTime > maxWait) {
+                    callback();
+                } else {
+                    requestAnimationFrame(check);
+                }
+            }
+            requestAnimationFrame(check);
+        }
+
+        function positionGuide(target, position) {
+            const rect = target.getBoundingClientRect();
+            const padding = 8;
+
+            const highlight = document.getElementById('guide-highlight');
+            highlight.style.left = (rect.left - padding) + 'px';
+            highlight.style.top = (rect.top - padding) + 'px';
+            highlight.style.width = (rect.width + padding * 2) + 'px';
+            highlight.style.height = (rect.height + padding * 2) + 'px';
+
+            const tooltip = document.getElementById('guide-tooltip');
+            const gap = 18;
+            const tooltipWidth = tooltip.offsetWidth || 300;
+            const tooltipHeight = tooltip.offsetHeight || 150;
+
+            // iOSのアドレスバー変動等に対応し、visualViewportがあれば優先的に使用
+            const viewportW = window.innerWidth;
+            const viewportH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+            let top, left;
+
+            if (position === 'bottom') {
+                top = rect.bottom + gap;
+                left = rect.left + rect.width / 2 - tooltipWidth / 2;
+            } else if (position === 'top') {
+                top = rect.top - gap - tooltipHeight;
+                left = rect.left + rect.width / 2 - tooltipWidth / 2;
+            } else if (position === 'right') {
+                top = rect.top + rect.height / 2 - tooltipHeight / 2;
+                left = rect.right + gap;
+            } else {
+                top = rect.top + rect.height / 2 - tooltipHeight / 2;
+                left = rect.left - gap - tooltipWidth;
+            }
+
+            // スマホの縦画面など、画面が低い場合に上下反転して画面内に収める
+            if (position === 'bottom' && top + tooltipHeight > viewportH - 12) {
+                top = rect.top - gap - tooltipHeight;
+            } else if (position === 'top' && top < 12) {
+                top = rect.bottom + gap;
+            }
+
+            left = Math.max(12, Math.min(left, viewportW - tooltipWidth - 12));
+            top = Math.max(12, Math.min(top, viewportH - tooltipHeight - 12));
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+
+            const arrow = document.getElementById('guide-arrow');
+            if (position === 'bottom' || position === 'top') {
+                arrow.style.left = (rect.left + rect.width / 2 - 7) + 'px';
+                arrow.style.top = (top < rect.top) ? (top + tooltipHeight - 7) + 'px' : (top - 7) + 'px';
+            } else {
+                arrow.style.top = (rect.top + rect.height / 2 - 7) + 'px';
+                arrow.style.left = (position === 'right') ? (left - 7) + 'px' : (left + tooltipWidth - 7) + 'px';
+            }
+        }
+
+        function nextStep() {
+            if (currentGuideIndex + 1 >= guideSteps.length) {
+                endGuide();
+            } else {
+                showStep(currentGuideIndex + 1);
+            }
+        }
+
+        function skipGuide() {
+            endGuide();
+        }
+
+        function endGuide() {
+            guideActive = false;
+            document.getElementById('guide-blocker').style.display = 'none';
+            document.getElementById('guide-highlight').style.display = 'none';
+            document.getElementById('guide-tooltip').style.display = 'none';
+            document.getElementById('guide-arrow').style.display = 'none';
+            document.getElementById('guide-fab').style.display = 'flex';
+        }
+
+        // リサイズ・画面回転・iOSのビューポート変動の再配置（デバウンス処理つき）
+        let resizeDebounceTimer = null;
+        function handleGuideReposition() {
+            clearTimeout(resizeDebounceTimer);
+            resizeDebounceTimer = setTimeout(() => {
+                if (guideActive && currentGuideIndex >= 0) {
+                    const step = guideSteps[currentGuideIndex];
+                    const target = document.querySelector(step.target);
+                    if (target) positionGuide(target, step.position);
+                }
+            }, 150);
+        }
+
+        window.addEventListener('resize', handleGuideReposition);
+        window.addEventListener('orientationchange', handleGuideReposition);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', handleGuideReposition);
+            window.visualViewport.addEventListener('scroll', handleGuideReposition);
+        }
+    </script>
+</body>
+</html>

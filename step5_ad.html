@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareLink AI - 広告</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background: #0f0f1a;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 24px;
+            position: relative; overflow: hidden;
+        }
+
+        .dark-orb {
+            position: fixed; border-radius: 50%;
+            filter: blur(100px); opacity: 0.15; pointer-events: none;
+        }
+
+        .dark-orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, #6366f1, #4338ca);
+            top: -200px; left: -100px;
+        }
+
+        .dark-orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, #8b5cf6, #7c3aed);
+            bottom: -150px; right: -100px;
+        }
+
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .ad-container {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 680px;
+        }
+
+        .ad-top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+        }
+
+        .ad-label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; color: #4b5563;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 4px 12px;
+            letter-spacing: 1px;
+        }
+
+        .ad-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #6366f1; animation: adBlink 1.5s infinite;
+        }
+
+        @keyframes adBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .ad-main {
+            border-radius: 20px; overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 0 60px rgba(99,102,241,0.15), 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .ad-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            aspect-ratio: 16/9;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px; text-align: center; gap: 16px;
+            position: relative;
+        }
+
+        .particle {
+            position: absolute; border-radius: 50%;
+            background: rgba(99,102,241,0.3); animation: float 4s infinite ease-in-out;
+        }
+
+        .p1 { width: 8px; height: 8px; top: 20%; left: 15%; animation-delay: 0s; }
+        .p2 { width: 5px; height: 5px; top: 60%; left: 80%; animation-delay: 1s; }
+        .p3 { width: 10px; height: 10px; top: 75%; left: 25%; animation-delay: 2s; }
+        .p4 { width: 6px; height: 6px; top: 30%; left: 70%; animation-delay: 0.5s; }
+        .p5 { width: 4px; height: 4px; top: 50%; left: 50%; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50% { transform: translateY(-20px); opacity: 0.8; }
+        }
+
+        .ad-logo-wrap {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .ad-logo-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 36px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 24px rgba(255,255,255,0.15);
+        }
+
+        .ad-logo-card img {
+            height: 96px;
+            display: block;
+        }
+
+        .ad-catchcopy {
+            font-size: 20px; font-weight: 700; color: white;
+            line-height: 1.4; letter-spacing: -0.5px;
+        }
+
+        .ad-catchcopy em {
+            background: linear-gradient(135deg, #6ee7b7, #34d399);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; font-style: normal;
+        }
+
+        .ad-sub {
+            font-size: 13px; color: #94a3b8; line-height: 1.6;
+        }
+
+        .ad-features {
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+        }
+
+        .ad-feature {
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 20px; padding: 5px 12px;
+            font-size: 12px; font-weight: 600; color: #6ee7b7;
+        }
+
+        .skip-area {
+            position: absolute; bottom: 14px; right: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .skip-counter {
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            color: #94a3b8; border-radius: 8px;
+            padding: 5px 12px; font-size: 13px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .skip-btn {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);
+            color: #94a3b8; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; padding: 5px 14px;
+            font-size: 13px; font-weight: 600; cursor: not-allowed;
+            transition: all 0.3s; font-family: inherit;
+        }
+
+        .skip-btn.active {
+            cursor: pointer; color: white;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: transparent;
+            box-shadow: 0 0 12px rgba(99,102,241,0.4);
+        }
+
+        .progress-wrap {
+            margin-top: 14px; padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .progress-label { font-size: 12px; color: #4b5563; white-space: nowrap; }
+
+        .progress-bar-wrap {
+            flex: 1; height: 4px; background: rgba(255,255,255,0.08);
+            border-radius: 2px; overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%; transition: width 1s linear; border-radius: 2px;
+        }
+
+        .progress-timer {
+            font-size: 14px; font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #a78bfa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            white-space: nowrap;
+        }
+
+        .ad-note {
+            text-align: center; margin-top: 12px;
+            font-size: 11px; color: #374151; line-height: 1.6;
+        }
+
+        .upgrade-link {
+            color: #818cf8; cursor: pointer; text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dark-orb dark-orb-1"></div>
+    <div class="dark-orb dark-orb-2"></div>
+    <div class="grid-bg"></div>
+
+    <div class="ad-container">
+
+        <div class="ad-top-bar">
+            <div class="ad-label">
+                <div class="ad-dot"></div>
+                広告 / ADVERTISEMENT
+            </div>
+            <div style="font-size:11px;color:#374151;">CareLink AI スポンサード</div>
+        </div>
+
+        <div class="ad-main">
+            <div class="ad-content">
+                <div class="particle p1"></div>
+                <div class="particle p2"></div>
+                <div class="particle p3"></div>
+                <div class="particle p4"></div>
+                <div class="particle p5"></div>
+
+                <div class="ad-logo-wrap">
+                    <div class="ad-logo-card">
+                        <img src="musubona_logo.png" alt="むすぼなAI">
+                    </div>
+                </div>
+
+                <div class="ad-catchcopy">
+                    記録業務を、<em>もっとスマートに。</em>
+                </div>
+
+                <div class="ad-sub">
+                    音声から記録を自動作成するAI記録支援ツール<br>
+                    「むすぼなAI」で、現場の負担を軽減します
+                </div>
+
+                <div class="ad-features">
+                    <div class="ad-feature">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        AI自動記録
+                    </div>
+                    <div class="ad-feature">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        音声から自動文字起こし
+                    </div>
+                    <div class="ad-feature">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        セキュア保存
+                    </div>
+                </div>
+
+                <div class="skip-area">
+                    <div class="skip-counter" id="skip-counter">15秒後にスキップ可能</div>
+                    <button class="skip-btn" id="skip-btn" onclick="skipAd()">スキップ →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-label">この広告を視聴すると計画書を閲覧できます</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-timer" id="progress-timer">15秒</div>
+        </div>
+
+        <div class="ad-note">
+            ※ 広告はCareLink AIシステムの利用料として表示されます<br>
+            <span class="upgrade-link" onclick="alert('有料プラン登録画面へ遷移します（モック）')">有料プランに登録</span>すると広告なしで無制限に閲覧できます
+        </div>
+
+    </div>
+
+    <script>
+        let timeLeft = 15;
+        const total = 15;
+
+        const counter = document.getElementById('skip-counter');
+        const skipBtn = document.getElementById('skip-btn');
+        const bar = document.getElementById('progress-bar');
+        const timer = document.getElementById('progress-timer');
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            bar.style.width = ((total - timeLeft) / total * 100) + '%';
+            timer.textContent = timeLeft > 0 ? timeLeft + '秒' : '完了';
+
+            if (timeLeft <= 3 && timeLeft > 0) {
+                counter.textContent = timeLeft + '秒後にスキップ可能';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                counter.textContent = 'スキップ可能';
+                skipBtn.classList.add('active');
+                skipBtn.textContent = 'スキップ →';
+                setTimeout(() => { window.location.href = 'jigyosho_dashboard.html'; }, 1000);
+            }
+        }, 1000);
+
+        function skipAd() {
+            if (skipBtn.classList.contains('active')) {
+                clearInterval(interval);
+                window.location.href = 'jigyosho_dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>
